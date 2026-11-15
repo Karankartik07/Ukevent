@@ -1,12 +1,17 @@
+import { loadEnvFile } from 'node:process';
+try {
+  loadEnvFile('.env.local');
+} catch (e) {}
+
 import mongoose from 'mongoose';
 import { v2 as cloudinary } from 'cloudinary';
 
-const MONGODB_URI = "mongodb+srv://karankartik134_db_user:ckiUL5loCaASJWvq@cluster0.rosczfu.mongodb.net/meraindia?retryWrites=true&w=majority";
+const MONGODB_URI = process.env.MONGODB_URI;
 
 cloudinary.config({
-  cloud_name: "o31b8mid",
-  api_key: "265763766552385",
-  api_secret: "spandgbeXSySclw0HNPxRdHlrSs",
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
   secure: true,
 });
 

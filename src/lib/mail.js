@@ -54,7 +54,7 @@ export async function sendTicketEmail(booking) {
   const transporter = getTransporter();
 
   const formattedAmount = totalAmount === 0 ? 'FREE' : `£${totalAmount.toFixed(2)}`;
-  const fromEmail = process.env.SMTP_FROM || process.env.EMAIL_FROM || 'MeraIndia UK Tickets <tickets@meraindia.co.uk>';
+  const fromEmail = process.env.SMTP_FROM || process.env.EMAIL_FROM || process.env.SMTP_USER || 'MeraIndia UK Tickets';
 
   const htmlContent = `
 <!DOCTYPE html>
@@ -195,13 +195,7 @@ export async function sendTicketEmail(booking) {
   `;
 
   if (!transporter) {
-    console.log(`\n======================================================`);
-    console.log(`[NODEMAILER DEV MODE] No SMTP credentials in .env.local.`);
-    console.log(`Email would be sent to: ${userEmail}`);
-    console.log(`Subject: Your Ticket Confirmation: ${eventTitle} (${bookingRef})`);
-    console.log(`Booking Ref: ${bookingRef} | Attendee: ${userName} | Total: ${formattedAmount}`);
-    console.log(`Tip: Add SMTP_HOST, SMTP_USER, SMTP_PASS to .env.local to send live emails!`);
-    console.log(`======================================================\n`);
+    console.log(`[Nodemailer] No SMTP configured in environment. Skipped live email for ref: ${bookingRef}`);
     return { success: true, mode: 'logged_dev' };
   }
 
