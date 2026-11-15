@@ -112,7 +112,7 @@ export default function HomePage() {
             <span className="font-semibold text-stone-600">Filters:</span>
             {searchQuery && (
               <span className="bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full font-medium">
-                "{searchQuery}"
+                &quot;{searchQuery}&quot;
               </span>
             )}
             {selectedCity && (

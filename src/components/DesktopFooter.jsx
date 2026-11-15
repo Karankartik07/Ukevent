@@ -48,8 +48,8 @@ export default function DesktopFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/radio" className="hover:text-pink-400 transition-colors">
-                  24/7 South Asian Radio
+                <Link href="/listings?category=Community" className="hover:text-pink-400 transition-colors">
+                  Diaspora Community Networks
                 </Link>
               </li>
             </ul>

@@ -5,6 +5,8 @@ import Event from '@/models/Event';
 import { getAuthAdmin } from '@/lib/auth';
 import { deleteFromCloudinary } from '@/lib/cloudinary';
 
+const VALID_CATEGORIES = ['MUSIC', 'FESTIVAL', 'CULTURE', 'FOOD', 'TRAVEL', 'EDUCATION', 'BUSINESS', 'COMMUNITY', 'OTHER'];
+
 export async function GET(request, context) {
   try {
     await connectDB();
@@ -51,6 +53,13 @@ export async function PUT(request, context) {
     await connectDB();
     const { id } = await context.params;
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid event ID format' },
+        { status: 400 }
+      );
+    }
+
     const event = await Event.findById(id);
     if (!event) {
       return NextResponse.json(
@@ -83,7 +92,9 @@ export async function PUT(request, context) {
     // Validation
     const errors = [];
     if (!title || !title.trim()) errors.push('Title is required');
-    if (!category) errors.push('Category is required');
+    if (category && !VALID_CATEGORIES.includes(category.toUpperCase())) {
+      errors.push(`Invalid category "${category}". Must be one of: ${VALID_CATEGORIES.join(', ')}`);
+    }
     if (!date) errors.push('Date is required');
     if (!venue || !venue.trim()) errors.push('Venue is required');
     if (!city || !city.trim()) errors.push('City is required');
@@ -193,6 +204,13 @@ export async function DELETE(request, context) {
 
     await connectDB();
     const { id } = await context.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid event ID format' },
+        { status: 400 }
+      );
+    }
 
     const event = await Event.findById(id);
     if (!event) {

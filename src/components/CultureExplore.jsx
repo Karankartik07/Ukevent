@@ -52,7 +52,7 @@ export default function CultureExplore({ listings = [], onSelectCategory }) {
             Explore culture across the UK
           </h2>
           <p className="text-xs sm:text-sm text-stone-500 mt-0.5 sm:mt-1">
-            Find what you're looking for
+            Find what you&apos;re looking for
           </p>
         </div>
         <Link

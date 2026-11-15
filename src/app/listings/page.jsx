@@ -4,14 +4,14 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import DesktopFooter from '@/components/DesktopFooter';
-import { MapPin, Utensils, Plane, GraduationCap, Users, Radio, Sparkles, Loader2 } from 'lucide-react';
+import { MapPin, Utensils, Plane, GraduationCap, Users, ShoppingBag, Sparkles, Loader2 } from 'lucide-react';
 
 const CATEGORY_ICONS = {
   Restaurants: Utensils,
   Travel: Plane,
   Education: GraduationCap,
   Community: Users,
-  Radio: Radio,
+  Shopping: ShoppingBag,
   Festivals: Sparkles,
 };
 

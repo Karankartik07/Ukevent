@@ -14,12 +14,6 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const handleQuickFill = () => {
-    setEmail('admin@meraindia.co.uk');
-    setPassword('Admin@12345');
-    setError('');
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -104,21 +98,6 @@ export default function AdminLoginPage() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
         <div className="bg-[#29082c]/90 backdrop-blur-xl py-8 px-6 sm:px-10 shadow-2xl rounded-3xl border border-purple-800/60">
           
-          {/* Quick Demo Credentials Notice */}
-          <div className="mb-6 p-3.5 rounded-2xl bg-purple-950/70 border border-purple-700/60 flex items-center justify-between text-xs">
-            <div>
-              <p className="font-semibold text-pink-300">Default Admin Credentials:</p>
-              <p className="text-stone-300 mt-0.5">admin@meraindia.co.uk</p>
-            </div>
-            <button
-              type="button"
-              onClick={handleQuickFill}
-              className="px-2.5 py-1.5 rounded-lg bg-pink-600/30 hover:bg-pink-600 border border-pink-500/40 text-pink-200 hover:text-white text-[11px] font-semibold transition-colors"
-            >
-              Auto Fill
-            </button>
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-5">
             
             {/* Email Field */}

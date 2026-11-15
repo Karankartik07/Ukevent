@@ -3,6 +3,12 @@ import connectDB from '@/lib/mongodb';
 import Event from '@/models/Event';
 import { getAuthAdmin } from '@/lib/auth';
 
+const VALID_CATEGORIES = ['MUSIC', 'FESTIVAL', 'CULTURE', 'FOOD', 'TRAVEL', 'EDUCATION', 'BUSINESS', 'COMMUNITY', 'OTHER'];
+
+function escapeRegex(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
+
 export async function GET(request) {
   try {
     await connectDB();
@@ -12,7 +18,16 @@ export async function GET(request) {
     const category = searchParams.get('category');
     const city = searchParams.get('city');
     const search = searchParams.get('search');
-    const isAdmin = searchParams.get('all') === 'true';
+    
+    // Security check: Only verified logged-in admin can bypass published filter with all=true
+    const wantsAll = searchParams.get('all') === 'true';
+    let isAdmin = false;
+    if (wantsAll) {
+      const admin = await getAuthAdmin();
+      if (admin) {
+        isAdmin = true;
+      }
+    }
 
     const filter = {};
 
@@ -29,18 +44,19 @@ export async function GET(request) {
       filter.category = category.toUpperCase();
     }
 
-    if (city && city !== 'ALL') {
-      filter.city = new RegExp(city, 'i');
+    if (city && city !== 'ALL' && city.trim() !== '') {
+      const safeCity = escapeRegex(city.trim());
+      filter.city = new RegExp(safeCity, 'i');
     }
 
     if (search && search.trim() !== '') {
-      const q = search.trim();
+      const safeQ = escapeRegex(search.trim());
       filter.$or = [
-        { title: { $regex: q, $options: 'i' } },
-        { subtitle: { $regex: q, $options: 'i' } },
-        { venue: { $regex: q, $options: 'i' } },
-        { city: { $regex: q, $options: 'i' } },
-        { tags: { $in: [new RegExp(q, 'i')] } },
+        { title: { $regex: safeQ, $options: 'i' } },
+        { subtitle: { $regex: safeQ, $options: 'i' } },
+        { venue: { $regex: safeQ, $options: 'i' } },
+        { city: { $regex: safeQ, $options: 'i' } },
+        { tags: { $in: [new RegExp(safeQ, 'i')] } },
       ];
     }
 
@@ -97,7 +113,12 @@ export async function POST(request) {
     // 2. Comprehensive Validation
     const errors = [];
     if (!title || !title.trim()) errors.push('Title is required');
-    if (!category) errors.push('Category is required');
+    if (!category) {
+      errors.push('Category is required');
+    } else if (!VALID_CATEGORIES.includes(category.toUpperCase())) {
+      errors.push(`Invalid category "${category}". Must be one of: ${VALID_CATEGORIES.join(', ')}`);
+    }
+
     if (!date) errors.push('Date is required');
     if (!venue || !venue.trim()) errors.push('Venue is required');
     if (!city || !city.trim()) errors.push('City is required');

@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Calendar,
   PlusCircle,
+  Ticket,
   ExternalLink,
   LogOut,
   Shield,
@@ -57,6 +58,7 @@ export default function AdminLayout({ children }) {
     { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { label: 'Manage Events', href: '/admin/events', icon: Calendar },
     { label: 'Create New Event', href: '/admin/events/new', icon: PlusCircle },
+    { label: 'Ticket Bookings', href: '/admin/bookings', icon: Ticket },
   ];
 
   return (

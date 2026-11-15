@@ -330,12 +330,12 @@ export async function seedInitialData(force = false) {
         city: 'UK Wide',
       },
       {
-        title: 'Radio',
-        category: 'Radio',
-        subtitle: 'Music & Community Broadcasts',
-        description: '24/7 South Asian radio stations, Bollywood golden hits, news, and UK diaspora podcasts.',
+        title: 'Shopping & Bazaars',
+        category: 'Shopping',
+        subtitle: 'Ethnic Fashion & Jewellery',
+        description: 'Silk sarees, bridal lehengas, gold jewellery, and handicraft emporiums in Wembley, Southall, and Leicester.',
         imageUrl: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&auto=format&fit=crop&q=80',
-        city: 'Digital DAB & Web',
+        city: 'London & Midlands',
       },
     ];
 

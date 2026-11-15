@@ -10,7 +10,7 @@ const ListingSchema = new mongoose.Schema(
     category: {
       type: String,
       required: [true, 'Category is required'],
-      enum: ['Festivals', 'Restaurants', 'Travel', 'Education', 'Community', 'Radio', 'Shopping'],
+      enum: ['Festivals', 'Restaurants', 'Travel', 'Education', 'Community', 'Shopping'],
       default: 'Restaurants',
     },
     subtitle: {

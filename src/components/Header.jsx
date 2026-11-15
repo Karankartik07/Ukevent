@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   MapPin,
   Search,
-  Radio as RadioIcon,
   Shield,
   Menu,
   X,
@@ -13,20 +13,26 @@ import {
   Home,
   Calendar,
   Utensils,
-  ExternalLink,
 } from 'lucide-react';
 
 const UK_CITIES = ['All UK', 'London', 'Birmingham', 'Leicester', 'Manchester', 'Leeds', 'Edinburgh', 'Glasgow'];
 
 export default function Header({ selectedCity, onSelectCity, onSearch, searchQuery = '' }) {
+  const pathname = usePathname();
   const [cityOpen, setCityOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const navLinks = [
+    { label: 'Home', href: '/', icon: Home },
+    { label: 'Events & Tickets', href: '/events', icon: Calendar },
+    { label: 'Culture & Food', href: '/listings', icon: Utensils },
+  ];
+
   return (
     <>
-      <header className="sticky top-0 z-40 bg-[#240727] text-white shadow-md border-b border-purple-950/40 w-full">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#240727]/95 backdrop-blur-md text-white shadow-xl border-b border-purple-900/50 w-full transition-all">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 sm:h-20">
+          <div className="flex items-center justify-between h-16 sm:h-20">
             
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2 shrink-0 group">
@@ -55,26 +61,37 @@ export default function Header({ selectedCity, onSelectCity, onSearch, searchQue
                   value={searchQuery}
                   onChange={(e) => onSearch && onSearch(e.target.value)}
                   placeholder="Search Indian concerts, Diwali, Eid, food..."
-                  className="w-full pl-10 pr-4 py-2 bg-purple-950/60 border border-purple-800/60 rounded-full text-sm text-white placeholder-purple-300/60 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-9 py-2 bg-purple-950/70 border border-purple-800/80 rounded-full text-xs sm:text-sm text-white placeholder-purple-300/60 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all shadow-inner"
                 />
+                {searchQuery && (
+                  <button
+                    onClick={() => onSearch && onSearch('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-400 hover:text-white"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </div>
 
-            {/* Navigation Links - Desktop Only */}
-            <nav className="hidden lg:flex items-center space-x-6 text-sm font-medium">
-              <Link href="/" className="text-pink-400 hover:text-white transition-colors">
-                Home
-              </Link>
-              <Link href="/events" className="text-purple-200 hover:text-pink-400 transition-colors">
-                Events
-              </Link>
-              <Link href="/listings" className="text-purple-200 hover:text-pink-400 transition-colors">
-                Culture & Food
-              </Link>
-              <Link href="/radio" className="text-purple-200 hover:text-pink-400 transition-colors flex items-center space-x-1">
-                <RadioIcon className="w-3.5 h-3.5 text-pink-500 animate-pulse" />
-                <span>Live Radio</span>
-              </Link>
+            {/* Navigation Links - Desktop Only (Dynamic Active State) */}
+            <nav className="hidden lg:flex items-center space-x-1 sm:space-x-2 text-sm font-medium">
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`px-3.5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all ${
+                      isActive
+                        ? 'text-pink-400 bg-pink-500/10 shadow-sm'
+                        : 'text-stone-300 hover:text-white hover:bg-purple-900/40'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </nav>
 
             {/* Right Header Actions */}
@@ -84,41 +101,55 @@ export default function Header({ selectedCity, onSelectCity, onSearch, searchQue
               <div className="relative">
                 <button
                   onClick={() => setCityOpen(!cityOpen)}
-                  className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-full bg-purple-950/80 border border-purple-800/80 hover:border-pink-500/60 text-xs sm:text-sm font-medium text-purple-100 transition-all"
+                  className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-full bg-purple-950/80 border border-purple-800/80 hover:border-pink-500/60 text-xs sm:text-sm font-medium text-purple-100 transition-all shadow-sm active:scale-95"
                   title="Select UK City"
                 >
                   <MapPin className="w-3.5 h-3.5 text-pink-400 shrink-0" />
-                  <span className="text-xs sm:text-sm max-w-[65px] sm:max-w-none truncate">
+                  <span className="text-xs sm:text-sm max-w-[70px] sm:max-w-none truncate">
                     {selectedCity || 'London'}
                   </span>
                   <ChevronDown className="w-3 h-3 text-purple-400 hidden sm:inline" />
                 </button>
 
                 {cityOpen && (
-                  <div className="absolute right-0 mt-2 w-44 rounded-2xl bg-[#2a082e] border border-purple-800/80 shadow-2xl py-1.5 z-50 animate-in fade-in slide-in-from-top-2">
-                    <div className="px-3 py-1.5 text-[11px] font-semibold text-purple-300 uppercase tracking-wider border-b border-purple-900/60">
-                      Filter by UK City
+                  <>
+                    {/* Click outside backdrop to close */}
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setCityOpen(false)}
+                    />
+
+                    {/* Dropdown Menu */}
+                    <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-[#2a082e] border border-purple-800/80 shadow-2xl py-1.5 z-50 animate-in fade-in slide-in-from-top-2">
+                      <div className="px-3.5 py-2 text-[10px] font-bold text-purple-300 uppercase tracking-wider border-b border-purple-900/60">
+                        Filter by UK City
+                      </div>
+                      {UK_CITIES.map((city) => {
+                        const isCityActive =
+                          selectedCity === city || (!selectedCity && city === 'All UK');
+
+                        return (
+                          <button
+                            key={city}
+                            onClick={() => {
+                              onSelectCity && onSelectCity(city === 'All UK' ? '' : city);
+                              setCityOpen(false);
+                            }}
+                            className={`w-full text-left px-3.5 py-2 text-xs transition-colors flex items-center justify-between ${
+                              isCityActive
+                                ? 'text-pink-400 font-bold bg-pink-500/10'
+                                : 'text-purple-200 hover:bg-purple-900/60 hover:text-white'
+                            }`}
+                          >
+                            <span>{city}</span>
+                            {isCityActive && (
+                              <span className="w-1.5 h-1.5 rounded-full bg-pink-400" />
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
-                    {UK_CITIES.map((city) => (
-                      <button
-                        key={city}
-                        onClick={() => {
-                          onSelectCity && onSelectCity(city === 'All UK' ? '' : city);
-                          setCityOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center justify-between ${
-                          (selectedCity === city || (!selectedCity && city === 'All UK'))
-                            ? 'text-pink-400 font-semibold bg-pink-500/10'
-                            : 'text-purple-200 hover:bg-purple-900/50'
-                        }`}
-                      >
-                        <span>{city}</span>
-                        {(selectedCity === city || (!selectedCity && city === 'All UK')) && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-pink-400" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
+                  </>
                 )}
               </div>
 
@@ -134,7 +165,7 @@ export default function Header({ selectedCity, onSelectCity, onSearch, searchQue
               {/* Hamburger Icon for Mobile & Tablet */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 rounded-xl text-purple-200 hover:text-white bg-purple-950/70 border border-purple-800/60 hover:bg-purple-900/80 transition-all focus:outline-none flex items-center justify-center"
+                className="lg:hidden p-2 rounded-xl text-purple-200 hover:text-white bg-purple-950/70 border border-purple-800/60 hover:bg-purple-900/80 transition-all focus:outline-none flex items-center justify-center active:scale-95"
                 aria-label="Open Navigation Menu"
               >
                 {mobileMenuOpen ? (
@@ -149,12 +180,15 @@ export default function Header({ selectedCity, onSelectCity, onSearch, searchQue
         </div>
       </header>
 
+      {/* Spacer to prevent page content from hiding under fixed navbar */}
+      <div className="h-16 sm:h-20 w-full shrink-0" aria-hidden="true" />
+
       {/* Slide-out Mobile Menu Drawer */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
             onClick={() => setMobileMenuOpen(false)}
           />
 
@@ -190,52 +224,37 @@ export default function Header({ selectedCity, onSelectCity, onSearch, searchQue
                   value={searchQuery}
                   onChange={(e) => onSearch && onSearch(e.target.value)}
                   placeholder="Search events, concerts..."
-                  className="w-full pl-9 pr-3 py-2 bg-purple-950 border border-purple-800 rounded-xl text-xs text-white placeholder-purple-400/50 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full pl-9 pr-3 py-2.5 bg-purple-950 border border-purple-800 rounded-xl text-xs text-white placeholder-purple-400/50 focus:outline-none focus:ring-2 focus:ring-pink-500"
                 />
               </div>
 
-              {/* Navigation Links with Icons */}
+              {/* Navigation Links with Icons (No Radio, Dynamic Active Highlights) */}
               <nav className="space-y-1.5">
-                <Link
-                  href="/"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-pink-400 bg-purple-900/40"
-                >
-                  <Home className="w-4 h-4 text-pink-400" />
-                  <span>Home</span>
-                </Link>
+                {navLinks.map((link) => {
+                  const Icon = link.icon;
+                  const isActive = pathname === link.href;
 
-                <Link
-                  href="/events"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-purple-200 hover:bg-purple-900/40 hover:text-white transition-colors"
-                >
-                  <Calendar className="w-4 h-4 text-purple-400" />
-                  <span>Featured Events & Tickets</span>
-                </Link>
-
-                <Link
-                  href="/listings"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-purple-200 hover:bg-purple-900/40 hover:text-white transition-colors"
-                >
-                  <Utensils className="w-4 h-4 text-purple-400" />
-                  <span>Culture & Food Directory</span>
-                </Link>
-
-                <Link
-                  href="/radio"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-purple-200 hover:bg-purple-900/40 hover:text-white transition-colors"
-                >
-                  <RadioIcon className="w-4 h-4 text-pink-500 animate-pulse" />
-                  <span>South Asian Live Radio</span>
-                </Link>
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                        isActive
+                          ? 'text-pink-400 bg-pink-500/15 border border-pink-500/30 font-bold'
+                          : 'text-purple-200 hover:bg-purple-900/40 hover:text-white'
+                      }`}
+                    >
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-pink-400' : 'text-purple-400'}`} />
+                      <span>{link.label}</span>
+                    </Link>
+                  );
+                })}
               </nav>
 
               {/* City quick filter pills */}
               <div className="mt-5 pt-4 border-t border-purple-900/60">
-                <span className="text-[11px] font-bold text-purple-400 uppercase tracking-wider block mb-2">
+                <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider block mb-2">
                   Select UK Location
                 </span>
                 <div className="flex flex-wrap gap-1.5">

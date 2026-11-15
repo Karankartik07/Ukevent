@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Event from '@/models/Event';
 import Listing from '@/models/Listing';
+import Booking from '@/models/Booking';
 import { getAuthAdmin } from '@/lib/auth';
 
 export async function GET() {
@@ -25,6 +26,12 @@ export async function GET() {
     const events = await Event.find({}, 'variants');
     const totalVariants = events.reduce((sum, e) => sum + (e.variants?.length || 0), 0);
 
+    // Bookings summary
+    const bookings = await Booking.find({});
+    const totalBookings = bookings.length;
+    const totalRevenue = bookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0);
+    const totalTicketsSold = bookings.reduce((sum, b) => sum + (b.quantity || 0), 0);
+
     return NextResponse.json({
       success: true,
       stats: {
@@ -34,6 +41,9 @@ export async function GET() {
         draftEvents,
         totalListings,
         totalVariants,
+        totalBookings,
+        totalRevenue,
+        totalTicketsSold,
       },
     });
   } catch (error) {
