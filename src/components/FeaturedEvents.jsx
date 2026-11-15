@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { MapPin, Heart, ArrowRight, Ticket } from 'lucide-react';
+import { MapPin, Heart, ArrowRight, Ticket, ExternalLink } from 'lucide-react';
 
 export default function FeaturedEvents({
   events = [],
@@ -13,6 +13,7 @@ export default function FeaturedEvents({
   const [favorites, setFavorites] = useState({});
 
   const toggleFavorite = (id, e) => {
+    e.preventDefault();
     e.stopPropagation();
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
   };
@@ -28,7 +29,7 @@ export default function FeaturedEvents({
   return (
     <section className="py-6 sm:py-10 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full overflow-hidden">
       
-      {/* Header section matching screenshot 1 */}
+      {/* Header section */}
       <div className="flex items-end justify-between mb-4 sm:mb-6">
         <div>
           <h2 className="text-xl sm:text-3xl font-bold font-serif text-stone-900 tracking-tight">
@@ -55,11 +56,16 @@ export default function FeaturedEvents({
               ? Math.min(...event.variants.map((v) => v.price))
               : 0;
 
+          const targetUrl = event.ticketUrl && event.ticketUrl.trim() !== '' ? event.ticketUrl.trim() : '#';
+          const targetAttr = event.openInNewTab !== false ? '_blank' : '_self';
+
           return (
-            <div
+            <a
               key={event._id}
-              onClick={() => onSelectEvent && onSelectEvent(event)}
-              className="shrink-0 w-[240px] sm:w-[280px] md:w-auto snap-start bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-stone-200/80 cursor-pointer flex flex-col group select-none"
+              href={targetUrl}
+              target={targetAttr}
+              rel={targetAttr === '_blank' ? 'noopener noreferrer' : undefined}
+              className="shrink-0 w-[240px] sm:w-[280px] md:w-auto snap-start bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-stone-200/80 cursor-pointer flex flex-col group select-none block no-underline text-inherit"
             >
               {/* Event Poster Image & Overlays */}
               <div className="relative h-44 sm:h-52 w-full overflow-hidden bg-stone-900">
@@ -80,8 +86,9 @@ export default function FeaturedEvents({
 
                 {/* Heart / Wishlist Button */}
                 <button
+                  type="button"
                   onClick={(e) => toggleFavorite(event._id, e)}
-                  className="absolute top-2.5 right-2.5 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/80 hover:bg-white backdrop-blur-sm flex items-center justify-center text-stone-700 hover:text-pink-600 shadow-md transition-colors"
+                  className="absolute top-2.5 right-2.5 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/80 hover:bg-white backdrop-blur-sm flex items-center justify-center text-stone-700 hover:text-pink-600 shadow-md transition-colors z-10"
                   aria-label="Save to favorites"
                 >
                   <Heart
@@ -91,7 +98,7 @@ export default function FeaturedEvents({
                   />
                 </button>
 
-                {/* Date Badge (rounded circular pill as in screenshots) */}
+                {/* Date Badge */}
                 <div className="absolute bottom-2.5 right-2.5 bg-white/95 backdrop-blur-md text-stone-900 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl sm:rounded-2xl shadow-lg flex flex-col items-center justify-center min-w-[46px] border border-stone-100">
                   <span className="text-[9px] sm:text-[10px] font-bold text-pink-600 tracking-wider uppercase leading-none">
                     {event.displayMonth || 'AUG'}
@@ -125,7 +132,7 @@ export default function FeaturedEvents({
                   </p>
                 </div>
 
-                {/* Ticket Variants Preview & Price */}
+                {/* Ticket Variants Preview, Price & External Link Indicator */}
                 <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between">
                   <div className="flex items-center space-x-1 text-[11px] text-stone-600 font-medium">
                     <Ticket className="w-3 h-3 text-pink-500 shrink-0" />
@@ -133,15 +140,16 @@ export default function FeaturedEvents({
                       {event.variants?.length || 1} {event.variants?.length === 1 ? 'Tier' : 'Tiers'}
                     </span>
                   </div>
-                  <div className="text-right">
-                    <span className="text-[10px] text-stone-400 mr-1">from</span>
+                  <div className="flex items-center space-x-1.5 text-right">
+                    <span className="text-[10px] text-stone-400">from</span>
                     <span className="font-bold text-sm sm:text-base text-stone-900">
                       {minPrice === 0 ? 'FREE' : `£${minPrice}`}
                     </span>
+                    <ExternalLink className="w-3.5 h-3.5 text-pink-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
                   </div>
                 </div>
               </div>
-            </div>
+            </a>
           );
         })}
       </div>

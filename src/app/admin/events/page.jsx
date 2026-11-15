@@ -17,6 +17,7 @@ import {
   Loader2,
   AlertCircle,
   ExternalLink,
+  RefreshCw,
 } from 'lucide-react';
 
 export default function AdminEventsListPage() {
@@ -26,6 +27,25 @@ export default function AdminEventsListPage() {
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [deletingId, setDeletingId] = useState(null);
   const [message, setMessage] = useState('');
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSync = async () => {
+    try {
+      setSyncing(true);
+      const res = await fetch('/api/admin/sync-events', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        setMessage(data.message);
+        fetchEvents();
+      } else {
+        alert(data.error || 'Failed to sync external events');
+      }
+    } catch {
+      alert('Failed to connect to sync endpoint');
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const fetchEvents = async () => {
     try {
@@ -86,13 +106,29 @@ export default function AdminEventsListPage() {
             View, edit, toggle featured status, and configure ticket variants for UK diaspora events.
           </p>
         </div>
-        <Link
-          href="/admin/events/new"
-          className="px-4 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs sm:text-sm flex items-center space-x-2 shadow-md shadow-pink-600/30 transition-all shrink-0"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>Add New Event</span>
-        </Link>
+        <div className="flex items-center space-x-2.5 shrink-0">
+          <button
+            onClick={handleSync}
+            disabled={syncing}
+            className="px-3.5 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold text-xs sm:text-sm flex items-center space-x-2 border border-purple-200 transition-all"
+            title="Import upcoming events from Ticketmaster, Eventbrite & AllEvents"
+          >
+            {syncing ? (
+              <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
+            ) : (
+              <RefreshCw className="w-4 h-4 text-purple-600" />
+            )}
+            <span>{syncing ? 'Syncing...' : 'Sync External Feeds'}</span>
+          </button>
+
+          <Link
+            href="/admin/events/new"
+            className="px-4 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs sm:text-sm flex items-center space-x-2 shadow-md shadow-pink-600/30 transition-all"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>Add New Event</span>
+          </Link>
+        </div>
       </div>
 
       {message && (
@@ -178,7 +214,22 @@ export default function AdminEventsListPage() {
                             className="w-12 h-12 rounded-xl object-cover shrink-0 bg-stone-100 border border-stone-200"
                           />
                           <div>
-                            <p className="font-bold text-stone-900 line-clamp-1">{ev.title}</p>
+                            <div className="flex items-center space-x-1.5">
+                              <p className="font-bold text-stone-900 line-clamp-1">{ev.title}</p>
+                              {ev.sourcePlatform && ev.sourcePlatform !== 'MERAINDIA' && (
+                                <span className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-full shrink-0 ${
+                                  ev.sourcePlatform === 'TICKETMASTER'
+                                    ? 'bg-blue-100 text-blue-700'
+                                    : ev.sourcePlatform === 'EVENTBRITE'
+                                    ? 'bg-orange-100 text-orange-700'
+                                    : ev.sourcePlatform === 'ALLEVENTS'
+                                    ? 'bg-emerald-100 text-emerald-700'
+                                    : 'bg-stone-100 text-stone-600'
+                                }`}>
+                                  {ev.sourcePlatform}
+                                </span>
+                              )}
+                            </div>
                             {ev.subtitle && (
                               <p className="text-[11px] text-stone-500 line-clamp-1">{ev.subtitle}</p>
                             )}
@@ -245,6 +296,17 @@ export default function AdminEventsListPage() {
                       {/* Actions */}
                       <td className="py-3.5 px-4 text-right">
                         <div className="flex items-center justify-end space-x-1.5">
+                          {ev.ticketUrl && (
+                            <a
+                              href={ev.ticketUrl}
+                              target={ev.openInNewTab !== false ? '_blank' : '_self'}
+                              rel="noopener noreferrer"
+                              className="p-1.5 rounded-lg bg-stone-100 hover:bg-purple-100 text-stone-600 hover:text-purple-700 transition-colors"
+                              title="Test Ticket Booking URL"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </a>
+                          )}
                           <Link
                             href={`/admin/events/${ev._id}/edit`}
                             className="p-1.5 rounded-lg bg-stone-100 hover:bg-pink-100 text-stone-700 hover:text-pink-700 transition-colors"

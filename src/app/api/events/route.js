@@ -106,6 +106,11 @@ export async function POST(request) {
       imagePublicId,
       isFeatured,
       status,
+      ticketUrl,
+      openInNewTab,
+      sourcePlatform,
+      sourceEventId,
+      priceDisplay,
       variants,
       tags,
     } = body;
@@ -194,6 +199,11 @@ export async function POST(request) {
       imagePublicId: imagePublicId || '',
       isFeatured: Boolean(isFeatured),
       status: status || 'published',
+      ticketUrl: (ticketUrl || '').trim(),
+      openInNewTab: openInNewTab !== undefined ? Boolean(openInNewTab) : true,
+      sourcePlatform: (sourcePlatform || 'MERAINDIA').toUpperCase(),
+      sourceEventId: (sourceEventId || '').trim(),
+      priceDisplay: (priceDisplay || '').trim(),
       variants: cleanVariants,
       tags: cleanTags,
     });

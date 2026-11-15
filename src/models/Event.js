@@ -124,6 +124,31 @@ const EventSchema = new mongoose.Schema(
       enum: ['published', 'draft', 'archived'],
       default: 'published',
     },
+    ticketUrl: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    openInNewTab: {
+      type: Boolean,
+      default: true,
+    },
+    sourcePlatform: {
+      type: String,
+      enum: ['MERAINDIA', 'TICKETMASTER', 'EVENTBRITE', 'ALLEVENTS', 'OTHER'],
+      default: 'MERAINDIA',
+      uppercase: true,
+    },
+    sourceEventId: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    priceDisplay: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     variants: {
       type: [TicketVariantSchema],
       validate: {

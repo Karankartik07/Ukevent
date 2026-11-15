@@ -85,6 +85,11 @@ export async function PUT(request, context) {
       imagePublicId,
       isFeatured,
       status,
+      ticketUrl,
+      openInNewTab,
+      sourcePlatform,
+      sourceEventId,
+      priceDisplay,
       variants,
       tags,
     } = body;
@@ -156,6 +161,11 @@ export async function PUT(request, context) {
     if (imagePublicId) event.imagePublicId = imagePublicId;
     if (isFeatured !== undefined) event.isFeatured = Boolean(isFeatured);
     if (status) event.status = status;
+    if (ticketUrl !== undefined) event.ticketUrl = (ticketUrl || '').trim();
+    if (openInNewTab !== undefined) event.openInNewTab = Boolean(openInNewTab);
+    if (sourcePlatform !== undefined) event.sourcePlatform = sourcePlatform.toUpperCase();
+    if (sourceEventId !== undefined) event.sourceEventId = sourceEventId.trim();
+    if (priceDisplay !== undefined) event.priceDisplay = priceDisplay.trim();
 
     if (variants && Array.isArray(variants)) {
       event.variants = variants.map((v) => ({

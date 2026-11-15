@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import DesktopFooter from '@/components/DesktopFooter';
 import EventDetailModal from '@/components/EventDetailModal';
-import { Search, MapPin, Calendar, Ticket, Loader2, Sparkles, Filter } from 'lucide-react';
+import { Search, MapPin, Calendar, Ticket, Loader2, Sparkles, Filter, ExternalLink } from 'lucide-react';
 
 const CATEGORIES = ['ALL', 'MUSIC', 'FESTIVAL', 'CULTURE', 'FOOD', 'EDUCATION'];
 const CITIES = ['ALL', 'London', 'Birmingham', 'Leicester', 'Manchester', 'Leeds'];
@@ -116,11 +116,16 @@ export default function EventsPage() {
                   ? Math.min(...event.variants.map((v) => v.price))
                   : 0;
 
+              const targetUrl = event.ticketUrl && event.ticketUrl.trim() !== '' ? event.ticketUrl.trim() : '#';
+              const targetAttr = event.openInNewTab !== false ? '_blank' : '_self';
+
               return (
-                <div
+                <a
                   key={event._id}
-                  onClick={() => setSelectedEvent(event)}
-                  className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-stone-200/80 cursor-pointer flex flex-col group"
+                  href={targetUrl}
+                  target={targetAttr}
+                  rel={targetAttr === '_blank' ? 'noopener noreferrer' : undefined}
+                  className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-stone-200/80 cursor-pointer flex flex-col group block no-underline text-inherit"
                 >
                   <div className="relative h-52 w-full overflow-hidden bg-stone-900">
                     <img
@@ -162,27 +167,30 @@ export default function EventsPage() {
                         <Ticket className="w-3.5 h-3.5 text-pink-500" />
                         <span>{event.variants?.length || 1} Tiers</span>
                       </span>
-                      <div className="text-right">
-                        <span className="text-xs text-stone-400 mr-1">from</span>
+                      <div className="flex items-center space-x-1.5 text-right">
+                        <span className="text-xs text-stone-400">from</span>
                         <span className="font-bold text-base text-stone-900">
                           {minPrice === 0 ? 'FREE' : `£${minPrice}`}
                         </span>
+                        <ExternalLink className="w-3.5 h-3.5 text-pink-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
                       </div>
                     </div>
                   </div>
-                </div>
+                </a>
               );
             })}
           </div>
         )}
       </main>
 
+      {/* EventDetailModal is kept for future in-app booking
       {selectedEvent && (
         <EventDetailModal
           event={selectedEvent}
           onClose={() => setSelectedEvent(null)}
         />
       )}
+      */}
 
       <DesktopFooter />
       <BottomNav />

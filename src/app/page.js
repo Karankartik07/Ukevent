@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Header from '@/components/Header';
 import FestivalTicker from '@/components/FestivalTicker';
 import HeroBanner from '@/components/HeroBanner';
+import HappeningThisWeek from '@/components/HappeningThisWeek';
 import FeaturedEvents from '@/components/FeaturedEvents';
 import CultureExplore from '@/components/CultureExplore';
 import EventDetailModal from '@/components/EventDetailModal';
@@ -145,7 +146,15 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* 4. Featured Events Section */}
+      {/* 4. Happening This Week & Upcoming Section (Auto-deduplicated, direct booking links) */}
+      {!loading && events.length > 0 && (
+        <HappeningThisWeek
+          events={events}
+          title="Happening This Week & Upcoming"
+        />
+      )}
+
+      {/* 5. Featured Events Section */}
       <div ref={eventsSectionRef} className="w-full">
         {loading ? (
           <div className="py-16 flex flex-col items-center justify-center text-stone-500 space-y-2">
@@ -171,13 +180,15 @@ export default function HomePage() {
         }}
       />
 
-      {/* 6. Event Detail & Ticket Variant Booking Modal */}
+      {/* 6. Event Detail & Ticket Variant Booking Modal (Kept for future use, temporarily disabled) */}
+      {/*
       {selectedEvent && (
         <EventDetailModal
           event={selectedEvent}
           onClose={() => setSelectedEvent(null)}
         />
       )}
+      */}
 
       {/* 7. Desktop Footer */}
       <DesktopFooter />

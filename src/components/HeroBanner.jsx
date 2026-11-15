@@ -29,12 +29,12 @@ export default function HeroBanner({ onSearchSubmit, onScrollToEvents }) {
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-20 lg:py-24 text-center flex flex-col items-center">
-        
+
         {/* Glow badge */}
-        <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-pink-500/20 border border-pink-500/30 text-pink-300 text-[11px] sm:text-xs font-semibold mb-3 backdrop-blur-sm">
+        {/* <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-pink-500/20 border border-pink-500/30 text-pink-300 text-[11px] sm:text-xs font-semibold mb-3 backdrop-blur-sm">
           <Sparkles className="w-3.5 h-3.5 text-pink-400" />
           <span>UK South Asian Community & Events Hub</span>
-        </div>
+        </div> */}
 
         {/* Hero Title (Matches Screenshot 1 & 4) */}
         <h1 className="text-3xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight font-serif mb-3 sm:mb-4">
@@ -61,7 +61,7 @@ export default function HeroBanner({ onSearchSubmit, onScrollToEvents }) {
         {/* Desktop / Tablet Interactive Search Card */}
         <div className="hidden md:block w-full max-w-4xl bg-stone-900/85 backdrop-blur-md p-3 rounded-2xl border border-stone-700/60 shadow-2xl">
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-2">
-            
+
             {/* Keyword Input */}
             <div className="relative flex items-center bg-stone-800/80 rounded-xl px-3 py-2 border border-stone-700/50">
               <Search className="w-4 h-4 text-pink-400 mr-2 shrink-0" />

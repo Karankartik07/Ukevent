@@ -16,6 +16,7 @@ import {
   AlertCircle,
   CheckCircle,
   Image as ImageIcon,
+  ExternalLink,
 } from 'lucide-react';
 
 const CATEGORIES = ['MUSIC', 'FESTIVAL', 'CULTURE', 'FOOD', 'TRAVEL', 'EDUCATION', 'BUSINESS', 'OTHER'];
@@ -39,6 +40,10 @@ export default function CreateEventPage() {
   const [isFeatured, setIsFeatured] = useState(false);
   const [status, setStatus] = useState('published');
   const [tags, setTags] = useState('');
+  const [ticketUrl, setTicketUrl] = useState('');
+  const [openInNewTab, setOpenInNewTab] = useState(true);
+  const [sourcePlatform, setSourcePlatform] = useState('MERAINDIA');
+  const [priceDisplay, setPriceDisplay] = useState('');
 
   // Image & Cloudinary
   const [imageUrl, setImageUrl] = useState('');
@@ -187,6 +192,10 @@ export default function CreateEventPage() {
           imagePublicId,
           isFeatured,
           status,
+          ticketUrl,
+          openInNewTab,
+          sourcePlatform,
+          priceDisplay,
           variants,
           tags,
         }),
@@ -570,6 +579,86 @@ export default function CreateEventPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* SECTION 4.5: External Ticket Booking Link (Third-Party Website) */}
+        <div className="bg-white p-6 rounded-3xl border border-stone-200/80 shadow-sm space-y-4">
+          <div className="border-b pb-2">
+            <h2 className="text-base font-bold text-stone-900 flex items-center space-x-2">
+              <ExternalLink className="w-4 h-4 text-pink-600" />
+              <span>External Ticket Booking Link (Partner Website)</span>
+            </h2>
+            <p className="text-xs text-stone-500 mt-0.5">
+              Specify the external website URL where users will purchase their tickets (e.g. Ticketmaster, Eventbrite, AXS).
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
+                  Ticketing Partner / Platform
+                </label>
+                <select
+                  value={sourcePlatform}
+                  onChange={(e) => setSourcePlatform(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-pink-500 font-semibold"
+                >
+                  <option value="MERAINDIA">MeraIndia Direct Partner</option>
+                  <option value="TICKETMASTER">Ticketmaster UK</option>
+                  <option value="EVENTBRITE">Eventbrite</option>
+                  <option value="ALLEVENTS">AllEvents.in</option>
+                  <option value="OTHER">Other Ticketing Website</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
+                  Display Price Badge (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={priceDisplay}
+                  onChange={(e) => setPriceDisplay(e.target.value)}
+                  placeholder="e.g. from £25.00 or FREE ENTRY"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-700 mb-1">
+                Ticket Booking URL
+              </label>
+              <input
+                type="url"
+                value={ticketUrl}
+                onChange={(e) => setTicketUrl(e.target.value)}
+                placeholder="https://www.ticketmaster.co.uk/event/... or https://www.eventbrite.co.uk/..."
+                className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <p className="text-[11px] text-stone-400 mt-1">
+                When visitors click this event on the website, they will be redirected directly to this link to book tickets.
+              </p>
+            </div>
+
+            <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200/70">
+              <label className="flex items-center space-x-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={openInNewTab}
+                  onChange={(e) => setOpenInNewTab(e.target.checked)}
+                  className="w-4 h-4 text-pink-600 rounded border-stone-300 focus:ring-pink-500"
+                />
+                <span className="text-xs font-bold text-stone-800">
+                  Open ticket link in a new tab (target=&quot;_blank&quot;)
+                </span>
+              </label>
+              <p className="text-[11px] text-stone-500 ml-6 mt-0.5">
+                Enabled by default. Keeps MeraIndia UK open in the background while opening the ticketing site in a new browser tab.
+              </p>
+            </div>
           </div>
         </div>
 
